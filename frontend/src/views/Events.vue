@@ -8,13 +8,14 @@
         <label>来源</label>
         <select v-model="form.source">
           <option>pos</option><option>online</option><option>franchise_offline</option>
-          <option>identity_desk</option><option>rule_admin</option>
+          <option>identity_desk</option><option>rule_admin</option><option>catalog_admin</option>
         </select>
         <label>类型</label>
         <select v-model="form.event_type">
           <option>transaction</option><option>identity_merge</option><option>identity_split</option>
           <option>identity_pending</option><option>identity_revoke</option>
           <option>rule_upsert</option><option>rule_withdraw</option>
+          <option>catalog_upsert</option><option>catalog_withdraw</option><option>sale_line</option>
         </select>
         <label>业务时间</label>
         <input v-model="form.biz_time" placeholder="2026-02-10T12:00:00Z" style="width:190px" />
@@ -43,6 +44,7 @@
           <option>transaction</option><option>identity_merge</option><option>identity_split</option>
           <option>identity_pending</option><option>identity_revoke</option>
           <option>rule_upsert</option><option>rule_withdraw</option>
+          <option>catalog_upsert</option><option>catalog_withdraw</option><option>sale_line</option>
         </select>
         <label>会员键</label>
         <input v-model="filterMember" placeholder="可空" @change="load" />

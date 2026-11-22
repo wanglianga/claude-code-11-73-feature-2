@@ -9,6 +9,10 @@
       <div class="stat"><div class="num">{{ ov.publications }}</div><div class="label">发布快照</div></div>
       <div class="stat"><div class="num">{{ ov.diffs }}</div><div class="label">差异归因</div></div>
       <div class="stat"><div class="num">{{ ov.impacts }}</div><div class="label">下游影响</div></div>
+      <div class="stat"><div class="num">{{ ov.catalog_items }}</div><div class="label">目录来源版本</div></div>
+      <div class="stat"><div class="num">{{ ov.mapping_slices }}</div><div class="label">当前映射切片</div></div>
+      <div class="stat"><div class="num">{{ ov.validation_flags_open }}</div><div class="label">待核记录</div></div>
+      <div class="stat"><div class="num">{{ ov.datasets }}<span v-if="ov.dataset_reviews" class="review-badge">+{{ ov.dataset_reviews }}复核</span></div><div class="label">分析数据集</div></div>
       <div class="stat">
         <div class="num">
           <span v-if="ov.ledger" :class="['tag', ov.ledger.ok ? 'ok' : 'bad']">
@@ -39,7 +43,9 @@
         <h3>架构与操作</h3>
         <p class="muted">
           采用「追加式双时间事件账 + 可重建投影」：events 账为唯一事实来源（追加-only，链式哈希防篡改），
-          身份图 / 规则版本 / 名录均为可重建投影。更正以新事件 + 修订链追加，绝不以当前主档覆盖历史。
+          身份图 / 规则版本 / 目录版本 / 映射切片 / 校验标志均为可重建投影。更正以新事件 + 修订链追加，
+          绝不以当前主档覆盖历史。交易分类历史映射支持两路线：物化切片（MATERIALIZED）与
+          查询时解释（INTERPRETED），共享同一解析核心，输出相同可比范围。
         </p>
         <div class="form-row">
           <button @click="doSeed">灌入演示场景</button>

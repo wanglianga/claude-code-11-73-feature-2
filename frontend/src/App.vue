@@ -9,6 +9,9 @@
         <RouterLink to="/identity">身份关系图</RouterLink>
         <RouterLink to="/rules">规则中心</RouterLink>
         <RouterLink to="/publications">发布与差异</RouterLink>
+        <RouterLink to="/catalog">目录中心</RouterLink>
+        <RouterLink to="/mapping">映射与校验</RouterLink>
+        <RouterLink to="/datasets">数据集与可比</RouterLink>
       </nav>
       <div v-if="logged" class="user">
         <span>{{ username }}（{{ role }}）</span>

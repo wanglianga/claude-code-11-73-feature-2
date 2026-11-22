@@ -49,6 +49,16 @@ button:disabled { opacity: 0.5; cursor: default; }
 .muted { color: var(--muted); font-size: 12px; }
 pre { background: #0f172a; color: #e2e8f0; padding: 12px; border-radius: 8px; font-size: 12px; overflow: auto; }
 .cause { display: inline-block; margin: 2px 4px 2px 0; padding: 2px 8px; border-radius: 6px; background: #eff6ff; color: #1d4ed8; font-size: 12px; }
+.tag.OPEN, .tag.bad-flag { background: #fee2e2; color: var(--red); font-weight: 700; }
+.tag.RESOLVED { background: #dcfce7; color: var(--green); }
+.tag.OK { background: #dcfce7; color: var(--green); }
+.tag.RX { background: #fee2e2; color: var(--red); font-weight: 700; }
+.tag.OTC { background: #dcfce7; color: var(--green); font-weight: 700; }
+.tag.保健 { background: #fef9c3; color: #854d0e; font-weight: 700; }
+.tag.MATERIALIZED { background: #dbeafe; color: #1d4ed8; font-weight: 700; }
+.tag.INTERPRETED { background: #f3e8ff; color: #7e22ce; font-weight: 700; }
+.tag.PENDING { background: #fef3c7; color: var(--gold); font-weight: 700; }
+.review-badge { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 999px; background: #fef3c7; color: var(--gold); font-size: 11px; font-weight: 700; vertical-align: middle; }
 .arrow { color: var(--muted); margin: 0 6px; }
 .login-wrap { max-width: 360px; margin: 120px auto; }
 .login-wrap h2 { text-align: center; }

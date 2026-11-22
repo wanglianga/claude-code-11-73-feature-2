@@ -8,6 +8,9 @@ import Eligibility from './views/Eligibility.vue'
 import Identity from './views/Identity.vue'
 import Rules from './views/Rules.vue'
 import Publications from './views/Publications.vue'
+import Catalog from './views/Catalog.vue'
+import Mapping from './views/Mapping.vue'
+import Datasets from './views/Datasets.vue'
 import './style.css'
 
 const router = createRouter({
@@ -20,6 +23,9 @@ const router = createRouter({
     { path: '/identity', component: Identity },
     { path: '/rules', component: Rules },
     { path: '/publications', component: Publications },
+    { path: '/catalog', component: Catalog },
+    { path: '/mapping', component: Mapping },
+    { path: '/datasets', component: Datasets },
   ],
 })
 

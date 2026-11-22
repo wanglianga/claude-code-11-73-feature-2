@@ -85,9 +85,13 @@ def ingest_event(
     return ev, True
 
 
-def apply_to_projections(db: Session, ev: models.Event) -> None:
-    """按事件类型更新投影表（投影 = 事件的物化缓存，可重建）。"""
-    from . import identity, rules  # 延迟导入避免循环
+def apply_to_projections(db: Session, ev: models.Event, head_time=None) -> None:
+    """按事件类型更新投影表（投影 = 事件的物化缓存，可重建）。
+
+    head_time：重放时的前缀水位（事件 1..N 的最大入账时间）；实时入账为 None，
+    由目录服务取账本头部时间。保证重建精确复现增量轨迹。
+    """
+    from . import catalog, identity, rules  # 延迟导入避免循环
 
     if ev.event_type == "transaction":
         key = ev.payload.get("member_key")
@@ -110,21 +114,36 @@ def apply_to_projections(db: Session, ev: models.Event) -> None:
                 db.add(models.MemberDirectory(member_key=k, first_seen_event_id=ev.id))
     elif ev.event_type in ("rule_upsert", "rule_withdraw"):
         rules.apply_rule_event(db, ev)
+    elif ev.event_type in catalog.CATALOG_TYPES:
+        catalog.apply_catalog_event(db, ev, head_time)
+    elif ev.event_type == catalog.SALE_TYPE:
+        catalog.apply_sale_event(db, ev, head_time)
 
 
 def rebuild_projections(db: Session) -> dict:
-    """从事件账全量重放，重建所有投影。证明投影可重建、账本是唯一事实来源。"""
+    """从事件账全量重放，重建所有投影。证明投影可重建、账本是唯一事实来源。
+
+    目录/切片/校验标志与待复核期间同为投影：重放时按相同增量逻辑重建；
+    已发布数据集（analytics_datasets 及其行）是冻结发布，不参与重建、永不修改。
+    """
     for tbl in (
         models.IdentityEdge,
         models.RuleVersion,
         models.RuleWithdrawal,
         models.MemberDirectory,
+        models.CatalogItem,
+        models.CatalogWithdrawal,
+        models.MappingSlice,
+        models.ValidationFlag,
+        models.DatasetReview,
     ):
         db.query(tbl).delete()
     db.flush()
     events = db.execute(select(models.Event).order_by(models.Event.id)).scalars().all()
+    head = None
     for ev in events:
-        apply_to_projections(db, ev)
+        head = ev.ingested_at if head is None else max(head, ev.ingested_at)
+        apply_to_projections(db, ev, head_time=head)
         db.flush()  # 让后续事件的重放能看到本事件的投影行
     db.commit()
     return {
@@ -133,6 +152,11 @@ def rebuild_projections(db: Session) -> dict:
         "rule_versions": db.query(models.RuleVersion).count(),
         "rule_withdrawals": db.query(models.RuleWithdrawal).count(),
         "members": db.query(models.MemberDirectory).count(),
+        "catalog_items": db.query(models.CatalogItem).count(),
+        "catalog_withdrawals": db.query(models.CatalogWithdrawal).count(),
+        "mapping_slices": db.query(models.MappingSlice).filter(models.MappingSlice.sys_to.is_(None)).count(),
+        "validation_flags_open": db.query(models.ValidationFlag).filter(models.ValidationFlag.status == "OPEN").count(),
+        "dataset_reviews": db.query(models.DatasetReview).count(),
     }
 
 
